@@ -185,7 +185,7 @@ footer{background:var(--dark);padding:40px;text-align:center;}
           <li>Places &amp; buildings</li>
           <li>A4 or A3 size</li>
         </ul>
-        <button class="price-btn" onclick="scrollToForm('Drawing')">Request a Drawing</button>
+        <button class="price-btn" onclick="window.location.href='https://link.fastpaydirect.com/payment-link/69f18626c970abb4095b06f8'">Request a Drawing</button>
       </div>
       <div class="price-card featured">
         <div class="featured-badge">Most Popular</div>
@@ -199,7 +199,7 @@ footer{background:var(--dark);padding:40px;text-align:center;}
           <li>Animals &amp; nature</li>
           <li>Canvas sizes from A4 to A1</li>
         </ul>
-        <button class="price-btn" onclick="scrollToForm('Painting')">Request a Painting</button>
+        <button class="price-btn" onclick="window.location.href='https://link.fastpaydirect.com/payment-link/69f18676c970abb4095b06fb'">Request a Painting</button>
       </div>
       <div class="price-card">
         <span class="price-icon">💻</span>
@@ -212,7 +212,7 @@ footer{background:var(--dark);padding:40px;text-align:center;}
           <li>Printable at any size</li>
           <li>Fast turnaround</li>
         </ul>
-        <button class="price-btn" onclick="scrollToForm('Digital Art')">Request Digital Art</button>
+        <button class="price-btn" onclick="window.location.href='https://link.fastpaydirect.com/payment-link/69f186ce8e7406bd4d4a3cf3'">Request Digital Art</button>
       </div>
     </div>
   </div>
@@ -342,6 +342,14 @@ function scrollToForm(type) {
   }, 600);
 }
 
+function getCommissionLink(type) {
+  var links = {
+    'Drawing': 'https://link.fastpaydirect.com/payment-link/69f18626c970abb4095b06f8',
+    'Painting': 'https://link.fastpaydirect.com/payment-link/69f18676c970abb4095b06fb',
+    'Digital Art': 'https://link.fastpaydirect.com/payment-link/69f186ce8e7406bd4d4a3cf3'
+  };
+  return links[type] || links['Painting'];
+}
 function submitCommission() {
   var name = document.getElementById('c-name').value.trim();
   var email = document.getElementById('c-email').value.trim();
@@ -359,8 +367,8 @@ function submitCommission() {
                '<strong>Budget:</strong> ' + budget + '<br>' +
                '<strong>Request:</strong> ' + desc;
   document.getElementById('success-detail').innerHTML = detail;
-  document.getElementById('success').classList.add('show');
-  document.body.style.overflow = 'hidden';
+  var commLink = getCommissionLink(type);
+  window.location.href = commLink;
 }
 </script>
 </body>

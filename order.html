@@ -243,6 +243,14 @@ function selectSize(el, size) {
   document.getElementById('sum-size').textContent = size;
 }
 
+var paymentLinks = {
+  'Butterflii T-Shirt': 'https://link.fastpaydirect.com/payment-link/69f184a6c970abb4095b06f4',
+  'Butterflii Hoodie': 'https://link.fastpaydirect.com/payment-link/69f184f08e7406bd4d4a3cf0',
+  'Art Tote Bag': 'https://link.fastpaydirect.com/payment-link/69f1853dc970abb4095b06f5',
+  'Art Mug': 'https://link.fastpaydirect.com/payment-link/69f1858c8e7406bd4d4a3cf1',
+  'Phone Case': 'https://link.fastpaydirect.com/payment-link/69f185d78e7406bd4d4a3cf2'
+};
+
 function placeOrder() {
   var name = document.getElementById('f-name').value.trim();
   var email = document.getElementById('f-email').value.trim();
@@ -250,12 +258,8 @@ function placeOrder() {
   if (!name || !email || !address) { alert('Please fill in your name, email and address!'); return; }
   if (selIdx === -1) { alert('Please choose an item!'); return; }
   if (items[selIdx].hasSize && !selSize) { alert('Please choose a size!'); return; }
-  var details = '<strong>' + items[selIdx].name + '</strong>';
-  if (selSize) details += ' &nbsp;·&nbsp; Size ' + selSize;
-  details += '<br>For: ' + name + '<br>Email: ' + email + '<br><strong>Total: £' + items[selIdx].price + '</strong>';
-  document.getElementById('success-details').innerHTML = details;
-  document.getElementById('success').classList.add('show');
-  document.body.style.overflow = 'hidden';
+  var link = paymentLinks[items[selIdx].name];
+  if (link) { window.location.href = link; }
 }
 
 function closeSuccess() {
