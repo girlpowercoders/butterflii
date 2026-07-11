@@ -366,14 +366,17 @@ footer{background:var(--dark);padding:64px 48px;text-align:center;}
     <p class="eyebrow">✦ Custom Orders</p>
     <h2>Want something <em>just for you?</em></h2>
     <p>Commission a completely original piece — your pet, your family, your favourite place, anything you can imagine. I'll bring it to life!</p>
-    <div class="form">
+    <div class="form" id="quick-form">
       <div class="form-row">
-        <input type="text" placeholder="Your name"/>
-        <input type="email" placeholder="Your email"/>
+        <input type="text" id="q-name" placeholder="Your name"/>
+        <input type="email" id="q-email" placeholder="Your email"/>
       </div>
-      <input type="text" placeholder="What would you like me to create?"/>
-      <textarea placeholder="Tell me more — colours, style, size, who it's for..."></textarea>
-      <button class="submit-btn">Send My Request ✦</button>
+      <input type="text" id="q-idea" placeholder="What would you like me to create?"/>
+      <textarea id="q-desc" placeholder="Tell me more — colours, style, size, who it's for..."></textarea>
+      <button class="submit-btn" id="q-btn" onclick="sendQuickRequest()">Send My Request ✦</button>
+    </div>
+    <div id="quick-thanks" style="display:none;color:white;font-family:'Cormorant Garamond',serif;font-size:1.4rem;line-height:1.7;padding:10px 0;">
+      🦋 Yay! I got your request and I'll be in touch really soon.<br/>Thank you so much! 💜
     </div>
   </div>
 </section>
@@ -453,6 +456,54 @@ document.getElementById('nav-install-btn').addEventListener('click', function(){
     deferredPrompt.userChoice.then(function(){ deferredPrompt = null; });
   }
 });
+
+// ===== Commission request (home page) =====
+// This sends the request straight to Elsie's email using Web3Forms.
+// Elsie: paste your free Web3Forms key between the quotes on the next line.
+var BUTTERFLII_ACCESS_KEY = "PASTE-YOUR-WEB3FORMS-KEY-HERE";
+
+function sendQuickRequest(){
+  var name = document.getElementById('q-name').value.trim();
+  var email = document.getElementById('q-email').value.trim();
+  var idea = document.getElementById('q-idea').value.trim();
+  var desc = document.getElementById('q-desc').value.trim();
+  if(!name || !email){ alert('Please pop in your name and email so Elsie can reply! 💜'); return; }
+  if(!idea){ alert('Please tell Elsie what you would like her to create! 🎨'); return; }
+
+  var btn = document.getElementById('q-btn');
+  btn.textContent = 'Sending... ✦';
+  btn.disabled = true;
+
+  fetch('https://api.web3forms.com/submit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify({
+      access_key: BUTTERFLII_ACCESS_KEY,
+      subject: 'New Butterflii commission request from ' + name,
+      from_name: 'Butterflii Website',
+      name: name,
+      email: email,
+      idea: idea,
+      details: desc || 'No extra details given'
+    })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(data){
+    if(data.success){
+      document.getElementById('quick-form').style.display = 'none';
+      document.getElementById('quick-thanks').style.display = 'block';
+    } else {
+      alert('Oops, something went wrong sending that. Please try again in a moment! 💜');
+      btn.textContent = 'Send My Request ✦';
+      btn.disabled = false;
+    }
+  })
+  .catch(function(){
+    alert('Oops, something went wrong sending that. Please try again in a moment! 💜');
+    btn.textContent = 'Send My Request ✦';
+    btn.disabled = false;
+  });
+}
 
 // Service Worker
 if('serviceWorker' in navigator){

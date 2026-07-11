@@ -233,76 +233,24 @@ footer{background:var(--dark);padding:40px;text-align:center;}
     <p class="sec-eyebrow">✦ Get Started</p>
     <h2 class="sec-title">Tell Elsie what you want</h2>
     <div class="form-card">
-      <div class="form-grid">
-        <div class="form-row">
-          <div class="form-group">
-            <label>Your Name</label>
-            <input type="text" id="c-name" placeholder="Your full name"/>
-          </div>
-          <div class="form-group">
-            <label>Your Email</label>
-            <input type="email" id="c-email" placeholder="your@email.com"/>
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Type of Art</label>
-            <select id="c-type">
-              <option value="">Choose a type...</option>
-              <option value="Drawing">Drawing (pencil / ink)</option>
-              <option value="Painting">Painting (acrylic / watercolour)</option>
-              <option value="Digital Art">Digital Art</option>
-              <option value="Mixed Media">Mixed Media</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Size</label>
-            <select id="c-size">
-              <option value="">Choose a size...</option>
-              <option value="A5 (small)">A5 — Small</option>
-              <option value="A4 (medium)">A4 — Medium</option>
-              <option value="A3 (large)">A3 — Large</option>
-              <option value="A2 (extra large)">A2 — Extra Large</option>
-              <option value="A1 (statement)">A1 — Statement</option>
-              <option value="Digital file">Digital File (any size)</option>
-            </select>
-          </div>
-        </div>
-        <div class="form-group">
-          <label>What would you like Elsie to create?</label>
-          <textarea id="c-desc" placeholder="Describe your idea — e.g. a portrait of my dog Biscuit, a pink abstract painting for my bedroom, a drawing of me and my best friend at the park..."></textarea>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Colours / Mood</label>
-            <input type="text" id="c-colours" placeholder="e.g. purples and pinks, bright and bold..."/>
-          </div>
-          <div class="form-group">
-            <label>Who is it for?</label>
-            <input type="text" id="c-for" placeholder="e.g. myself, a birthday gift for my mum..."/>
-          </div>
-        </div>
-        <div class="form-group">
-          <label>Style inspiration <span id="style-note" style="color:var(--purple);font-weight:700;"></span></label>
-          <input type="text" id="c-style" placeholder="e.g. similar to Anime Forest, bright and colourful, soft watercolour..."/>
-        </div>
-        <div class="form-group">
-          <label>Budget (optional)</label>
-          <select id="c-budget">
-            <option value="">No budget in mind</option>
-            <option value="Under £50">Under £50</option>
-            <option value="£50 - £100">£50 — £100</option>
-            <option value="£100 - £200">£100 — £200</option>
-            <option value="£200+">£200+</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Anything else?</label>
-          <textarea id="c-extra" placeholder="Any other details, reference photos you could describe, special requirements..." style="height:80px;"></textarea>
-        </div>
-        <button class="submit-btn" onclick="submitCommission()">Send My Commission Request ✦</button>
-        <p class="form-note">Elsie will reply within 2 days with a quote and timeline 💜</p>
-      </div>
+      <iframe
+        src="https://api.leadconnectorhq.com/widget/form/DFR6x9MJtlVfdD7uWF90"
+        style="width:100%;min-height:600px;border:none;border-radius:8px"
+        id="inline-DFR6x9MJtlVfdD7uWF90"
+        data-layout="{'id':'INLINE'}"
+        data-trigger-type="alwaysShow"
+        data-trigger-value=""
+        data-activation-type="alwaysActivated"
+        data-activation-value=""
+        data-deactivation-type="neverDeactivate"
+        data-deactivation-value=""
+        data-form-name="BBE Contacts form"
+        data-height="555"
+        data-layout-iframe-id="inline-DFR6x9MJtlVfdD7uWF90"
+        data-form-id="DFR6x9MJtlVfdD7uWF90"
+        title="BBE Contacts form">
+      </iframe>
+      <p class="form-note">Elsie will reply within 2 days with a quote and timeline 💜</p>
     </div>
   </div>
 </div>
@@ -350,6 +298,9 @@ function getCommissionLink(type) {
   };
   return links[type] || links['Painting'];
 }
+// Elsie: paste your free Web3Forms key between the quotes on the next line.
+var BUTTERFLII_ACCESS_KEY = "PASTE-YOUR-WEB3FORMS-KEY-HERE";
+
 function submitCommission() {
   var name = document.getElementById('c-name').value.trim();
   var email = document.getElementById('c-email').value.trim();
@@ -359,17 +310,59 @@ function submitCommission() {
   if (!type) { alert('Please choose a type of art!'); return; }
   if (!desc) { alert('Please describe what you would like!'); return; }
   var size = document.getElementById('c-size').value || 'Not specified';
+  var colours = document.getElementById('c-colours').value.trim() || 'Not specified';
+  var forWho = document.getElementById('c-for').value.trim() || 'Not specified';
+  var style = document.getElementById('c-style').value.trim() || 'Not specified';
   var budget = document.getElementById('c-budget').value || 'Not specified';
-  var detail = '<strong>Name:</strong> ' + name + '<br>' +
-               '<strong>Email:</strong> ' + email + '<br>' +
-               '<strong>Type:</strong> ' + type + '<br>' +
-               '<strong>Size:</strong> ' + size + '<br>' +
-               '<strong>Budget:</strong> ' + budget + '<br>' +
-               '<strong>Request:</strong> ' + desc;
-  document.getElementById('success-detail').innerHTML = detail;
-  var commLink = getCommissionLink(type);
-  window.location.href = commLink;
+  var extra = document.getElementById('c-extra').value.trim() || 'None';
+
+  var btn = document.querySelector('.submit-btn');
+  btn.textContent = 'Sending... ✦';
+  btn.disabled = true;
+
+  fetch('https://api.web3forms.com/submit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    body: JSON.stringify({
+      access_key: BUTTERFLII_ACCESS_KEY,
+      subject: 'New Butterflii commission request from ' + name,
+      from_name: 'Butterflii Website',
+      name: name,
+      email: email,
+      type: type,
+      size: size,
+      colours: colours,
+      for_who: forWho,
+      style: style,
+      budget: budget,
+      request: desc,
+      anything_else: extra
+    })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(data){
+    if(data.success){
+      var detail = '<strong>Name:</strong> ' + name + '<br>' +
+                   '<strong>Email:</strong> ' + email + '<br>' +
+                   '<strong>Type:</strong> ' + type + '<br>' +
+                   '<strong>Size:</strong> ' + size + '<br>' +
+                   '<strong>Budget:</strong> ' + budget + '<br>' +
+                   '<strong>Request:</strong> ' + desc;
+      document.getElementById('success-detail').innerHTML = detail;
+      document.getElementById('success').classList.add('show');
+    } else {
+      alert('Oops, something went wrong sending that. Please try again in a moment!');
+      btn.textContent = 'Send My Commission Request ✦';
+      btn.disabled = false;
+    }
+  })
+  .catch(function(){
+    alert('Oops, something went wrong sending that. Please try again in a moment!');
+    btn.textContent = 'Send My Commission Request ✦';
+    btn.disabled = false;
+  });
 }
 </script>
+<script src="https://link.msgsndr.com/js/form_embed.js"></script>
 </body>
 </html>
